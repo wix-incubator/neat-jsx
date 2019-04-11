@@ -1,27 +1,64 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import {parse, ParserOptions} from "@babel/parser";
-import { SmellMatcher, ISmell, IFileSmells } from '../types';
-
+import {SmellMatcher, ISmell, IFileSmells, SmellType} from '../types';
+import traverse from "@babel/traverse";
 
 export const findJsxSmellsInProject = async (smellMatchers: SmellMatcher[]): Promise<IFileSmells[]> => {
   const files = await vscode.workspace.findFiles('src/**/*.{tsx,jsx}');
-  return Promise.all(files.map((fileUri: vscode.Uri) => findJsxSmellsInFile(smellMatchers, fileUri)));
+  // console.log(files[0]);
+  // findJsxSmellsInFile(smellMatchers, files[0]);
+  // return Promise.resolve([]);
+  return Promise.all(
+    files.map((fileUri: vscode.Uri) => findJsxSmellsInFile(smellMatchers, fileUri)));
 };
 
 const findJsxSmellsInFile = async (smellMatchers: SmellMatcher[], fileUri: vscode.Uri): Promise<IFileSmells> => {
   const fileAst = await convertFileToAst(fileUri);
-  const fileJsxPartsCodeSmells = findJsxCodeSmells(smellMatchers, fileAst);
+  const smells = findJsxCodeSmells(smellMatchers, fileAst);
   return {
     uri: fileUri,
-    smells: fileJsxPartsCodeSmells
+    smells
   };
 };
 
-const findJsxCodeSmells = (smellMatchers: SmellMatcher[], fileAst: any): ISmell[] => {
-  return smellMatchers
-    .map((smellMatcher: SmellMatcher) => findAllMatches(smellMatcher, fileAst))
-    .reduce((acc: ISmell[], curr: ISmell[]): ISmell[] => [...acc, ...curr], []);
+const findJsxCodeSmells = (smellMatchers: SmellMatcher[], fileAst: any) => {
+  const smells: ISmell[] = [];
+  const Visitor = {
+    CallExpression(path: any) {
+      if (
+        path.node.callee.property &&
+        path.node.callee.property.name === 'map' &&
+        path.node.arguments[0].type === 'ArrowFunctionExpression' &&
+        path.node.arguments[0].body.type === 'JSXElement' &&
+        path.node.arguments[0].body.children.length > 0) {
+        const jsxElement = path.node.arguments[0].body;
+        smells.push({type: SmellType.ARRAY_MAP_TO_VERBOSE_COMPONENT, loc: jsxElement.loc});
+      }
+    },
+    LogicalExpression(path: any) {
+      if (
+        path.node.right.type === 'JSXElement' &&
+        path.node.right.children.length > 0) {
+        const jsxElement = path.node.right;
+        smells.push({type: SmellType.CONDITION_BRANCH_VERBOSE_COMPONENT, loc: jsxElement.loc});
+      }
+    },
+    ConditionalExpression(path:any) {
+      if (path.node.consequent.type === 'JSXElement' &&
+        path.node.consequent.children.length > 0) {
+        smells.push({type: SmellType.CONDITION_BRANCH_VERBOSE_COMPONENT, loc: path.node.consequent.loc});
+      }
+      if (path.node.alternate.type === 'JSXElement' &&
+        path.node.alternate.children.length > 0) {
+        smells.push({type: SmellType.CONDITION_BRANCH_VERBOSE_COMPONENT, loc: path.node.alternate.loc});
+      }
+    },
+  };
+  traverse(fileAst, Visitor);
+  return smells;
+  // return smellMatchers
+  //   .map((smellMatcher: SmellMatcher) => findAllMatches(smellMatcher, fileAst))
+  //   .reduce((acc: ISmell[], curr: ISmell[]): ISmell[] => [...acc, ...curr], []);
 };
 
 const convertFileToAst = async (fileUri: vscode.Uri) => {
@@ -35,18 +72,13 @@ const findAllMatches = (smellMatcher: SmellMatcher, fileAst: any): ISmell[] => {
 
 const codeToAst = (code: string) => {
   const parsingOptions = {
-    plugins: ["objectRestSpread", "classProperties", "typescript", "jsx", "decorators-legacy","dynamicImport"],
+    plugins: ["objectRestSpread", "classProperties", "typescript", "jsx", "decorators-legacy", "dynamicImport"],
     sourceType: "module",
   };
-  try {
-    return parse(code, <ParserOptions>{
-      startLine: 0,
-      ...parsingOptions
-    });
+  return parse(code, <ParserOptions>{
+    startLine: 0,
+    ...parsingOptions
+  });
 
-  } catch (e) {
-    console.log(e);
-    console.log(code);
-  }
 
 };

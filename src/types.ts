@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import {SourceLocation} from '@babel/types';
 
 export interface IFileSmells {
   uri: vscode.Uri;
@@ -7,8 +8,7 @@ export interface IFileSmells {
 
 export interface ISmell {
   type: SmellType;
-  startLine: number;
-  endLine: number;
+  loc:SourceLocation;
 }
 
 export enum SmellType {
