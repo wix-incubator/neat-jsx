@@ -1,7 +1,10 @@
 import { findJsxSmellsInProject } from './findCodeSmells';
 
-export const startCleanupFlow = async(smellMatchers) => {
+export const startCleanupFlow = async(smellMatchers:(()=>object)[]) => {
+
   const codeSmells = await findJsxSmellsInProject(smellMatchers);
+  console.log(codeSmells);
+  
 };
 
-export const getSmellMatchers = () => [];
+export const getSmellMatchers = ():(()=>object)[] => [];

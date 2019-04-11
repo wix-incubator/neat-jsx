@@ -36,6 +36,7 @@
 		"@types/mocha": "^2.2.42"
 	},
 	"dependencies": {
-		"@babel/parser": "^7.4.3"
+		"@babel/parser": "^7.4.3",
+		"@babel/types": "^7.4.0"
 	}
 }
