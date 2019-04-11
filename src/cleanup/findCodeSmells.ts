@@ -18,10 +18,10 @@ const findJsxSmellsInFile = async (smellMatchers: SmellMatcher[], fileUri: vscod
   };
 };
 
-const findJsxCodeSmells = (smellMatchers: SmellMatcher[], fileAst: any) => {
+const findJsxCodeSmells = (smellMatchers: SmellMatcher[], fileAst: any): ISmell[] => {
   return smellMatchers
     .map((smellMatcher: SmellMatcher) => findAllMatches(smellMatcher, fileAst))
-    .filter((smellMatches: ISmell[]) => smellMatches.length > 0);
+    .reduce((acc: ISmell[], curr: ISmell[]): ISmell[] => [...acc, ...curr], []);
 };
 
 const convertFileToAst = async (fileUri: vscode.Uri) => {
@@ -29,7 +29,7 @@ const convertFileToAst = async (fileUri: vscode.Uri) => {
   return codeToAst(doc.getText());
 };
 
-const findAllMatches = (smellMatcher: SmellMatcher, fileAst: any) => {
+const findAllMatches = (smellMatcher: SmellMatcher, fileAst: any): ISmell[] => {
   return [];
 };
 
