@@ -1,20 +1,20 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import {parse, ParserOptions} from "@babel/parser";
-import { SmellMatcher, ISmell } from '../types';
+import { SmellMatcher, ISmell, IFileSmells } from '../types';
 
 
-export const findJsxSmellsInProject = async (smellMatchers: SmellMatcher[]) => {
+export const findJsxSmellsInProject = async (smellMatchers: SmellMatcher[]): Promise<IFileSmells[]> => {
   const files = await vscode.workspace.findFiles('src/**/*.{tsx,jsx}');
   return Promise.all(files.map((fileUri: vscode.Uri) => findJsxSmellsInFile(smellMatchers, fileUri)));
 };
 
-const findJsxSmellsInFile = async (smellMatchers: SmellMatcher[], fileUri: vscode.Uri) => {
+const findJsxSmellsInFile = async (smellMatchers: SmellMatcher[], fileUri: vscode.Uri): Promise<IFileSmells> => {
   const fileAst = await convertFileToAst(fileUri);
   const fileJsxPartsCodeSmells = findJsxCodeSmells(smellMatchers, fileAst);
   return {
-    fileUri,
-    fileJsxPartsCodeSmells
+    uri: fileUri,
+    smells: fileJsxPartsCodeSmells
   };
 };
 

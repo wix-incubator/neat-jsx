@@ -1,3 +1,10 @@
+import * as vscode from 'vscode';
+
+export interface IFileSmells {
+  uri: vscode.Uri;
+  smells: ISmell[];
+}
+
 export interface ISmell {
   type: SmellType;
   startLine: number;
