@@ -1,4 +1,4 @@
-import { ComponentProperties } from "./jsx";
+import {ComponentProperties} from "./jsx";
 
 function buildFunctionalComponent(name, code, attributes: ComponentProperties) {
   const props = new Set([
@@ -16,5 +16,5 @@ function buildFunctionalComponent(name, code, attributes: ComponentProperties) {
 }
 
 export function buildComponent(name, code, attributes) {
-    return buildFunctionalComponent(name, code, attributes);
+  return buildFunctionalComponent(name, code, attributes);
 }

@@ -1,22 +1,18 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { QuickPickItem } from 'vscode';
-
+import {QuickPickItem} from 'vscode';
 
 export const workspaceRoot = () => vscode.workspace.rootPath;
 
-//export const activeURI = () => vscode.window.activeTextEditor.document.uri;
-//export const activeFileName = () => vscode.window.activeTextEditor.document.fileName;
-
-// export const selectedTextStart = () => vscode.window.activeTextEditor.selection.start;
-// export const selectedTextEnd = () => vscode.window.activeTextEditor.selection.end;
 export const activeEditor = () => vscode.window.activeTextEditor;
 
 export const config = () => vscode.workspace.getConfiguration('glean');
 
 export function currentEditorPath(): string {
   const activeEditor = vscode.window.activeTextEditor;
-  if (!activeEditor) return '';
+  if (!activeEditor) {
+    return '';
+  }
 
   const currentFilePath = path.dirname(activeEditor.document.fileName);
   const rootMatcher = new RegExp(`^${workspaceRoot()}`);
@@ -37,14 +33,9 @@ export function openFile(absolutePath: string): PromiseLike<string> {
     });
 }
 
-export function selectedText(range:vscode.Range) {
+export function selectedText(range: vscode.Range) {
   const editor = vscode.window.activeTextEditor;
   return editor.document.getText(range);
-}
-
-export function allText() {
-  const editor = vscode.window.activeTextEditor;
-  return editor.document.getText();
 }
 
 export function showInputBox(defaultValue, placeHolder) {
@@ -58,21 +49,22 @@ export function showInputBox(defaultValue, placeHolder) {
 export function showQuickPicksList(choices: QuickPickItem[], placeHolder = '') {
   return vscode.window.showQuickPick<vscode.QuickPickItem>(choices, {
     placeHolder
-  })
+  });
 };
 
 export const convertRelativeToFullPath = relativePath => {
   const root = workspaceRoot();
-  return root ? path.join(root, relativePath) : relativePath;  
-}
+  return root ? path.join(root, relativePath) : relativePath;
+};
 
 export const extractQuickPickValue = selection => {
-  if (!selection)
+  if (!selection) {
     return;
+  }
   return selection.label;
 };
 
-export const toQuickPick = (label: string, description?) => ({ label, description });
+export const toQuickPick = (label: string, description?) => ({label, description});
 
 export const toQuickPicksList = (choices: string[]) => choices.map(item => toQuickPick(item));
 

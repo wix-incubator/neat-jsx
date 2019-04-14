@@ -1,12 +1,16 @@
 import {activeEditor, selectedText, showInputBox} from "./editor";
-
 import {showDirectoryPicker} from "./directories-picker";
-
 import {showFilePicker} from "./file-picker";
 import * as path from 'path';
 import {importReactIfNeeded} from "./jsx";
-
-import {appendSelectedTextToFile, prependImportsToFileIfNeeded, replaceSelectionWith, switchToDestinationFileIfRequired, handleError, ProcessedSelection} from "./code-actions";
+import {
+  appendSelectedTextToFile,
+  prependImportsToFileIfNeeded,
+  replaceSelectionWith,
+  switchToDestinationFileIfRequired,
+  handleError,
+  ProcessedSelection
+} from "./code-actions";
 import * as t from "@babel/types";
 import {persistFileSystemChanges, appendTextToFile} from "./file-system";
 import {jsxToAst} from "./parsing";
@@ -39,7 +43,7 @@ export function wrapWithComponent(componentName, jsx): ProcessedSelection {
         !!path.findParent(
           parentPath => {
             return t.isMemberExpression(parentPath.node) ||
-              path.isArrowFunctionExpression(parentPath.node)
+              path.isArrowFunctionExpression(parentPath.node);
           }) || t.isObjectProperty(path.parent);
       if (!isMember && !path.node.wasVisited && !path.shouldSkip) {
         componentProperties.argumentProps.add(path.node.name);
@@ -122,7 +126,6 @@ export async function extractJSXToComponentToFile(range: Range, originPath: stri
     const filePath = await showFilePicker(folderPath);
     const componentName = produceComponentNameFrom(filePath);
     const selectionProccessingResult = await wrapWithComponent(componentName, selectedText(range));
-    console.log(selectionProccessingResult.text);
     await appendSelectedTextToFile(selectionProccessingResult.text, filePath, originPath);
     await importReactIfNeeded(filePath);
     await prependImportsToFileIfNeeded(selectionProccessingResult, filePath, originPath);

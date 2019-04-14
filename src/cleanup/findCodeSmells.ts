@@ -38,7 +38,7 @@ const findJsxCodeSmells = (smellMatchers: SmellMatcher[], fileAst: any, fileUri:
         smells.push({type: SmellType.CONDITION_BRANCH_VERBOSE_COMPONENT, loc: jsxElement.loc, fileUri});
       }
     },
-    ConditionalExpression(path:any) {
+    ConditionalExpression(path: any) {
       if (path.node.consequent.type === 'JSXElement' &&
         path.node.consequent.children.length > 0) {
         smells.push({type: SmellType.CONDITION_BRANCH_VERBOSE_COMPONENT, loc: path.node.consequent.loc, fileUri});

@@ -1,8 +1,8 @@
-import { parse, ParserOptions } from "@babel/parser";
+import {parse, ParserOptions} from "@babel/parser";
 import traverse from "@babel/traverse";
 import * as t from "@babel/types";
-import { transformFromAst } from "@babel/core";
-import { esmModuleSystemUsed, commonJSModuleSystemUsed } from "./settings";
+import {transformFromAst} from "@babel/core";
+import {esmModuleSystemUsed, commonJSModuleSystemUsed} from "./settings";
 import template from "@babel/template";
 
 export const parsingOptions = {
@@ -16,18 +16,15 @@ export const codeToAst = code =>
     ...parsingOptions
   });
 
-  export const jsxToAst = code => {
-    try {
-      return codeToAst(code);
-    } catch (e) {
-      return codeToAst(`<>${code}</>`);
-    }
-  };
-
-export const templateToAst = code => template.ast(code, parsingOptions);
+export const jsxToAst = code => {
+  try {
+    return codeToAst(code);
+  } catch (e) {
+    return codeToAst(`<>${code}</>`);
+  }
+};
 
 export function getIdentifier(code) {
-  console.log(code);
   const identifiers = [];
   const Visitor = {
     Identifier(path) {
