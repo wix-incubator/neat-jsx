@@ -1,11 +1,15 @@
-import {findJsxSmellsInProject} from './findCodeSmells';
-import {SmellMatcher, IFileSmells} from '../types';
+import { findJsxSmellsInProject } from './findCodeSmells';
+import { displayFilesCodeSmells } from './displayCodeSmells';
+import { SmellMatcher, ISmell } from '../types';
+import { mockFilesCodeSmells } from '../test/mockFilesCodeSmells';
 
 export const startCleanupFlow = async (smellMatchers: SmellMatcher[]) => {
 
-  const filesCodeSmells = (await findJsxSmellsInProject(smellMatchers)).filter((fileSmell: IFileSmells) => fileSmell.smells.length > 0);
-  console.log(filesCodeSmells);
+  // const filesCodeSmells: ISmell[] = await findJsxSmellsInProject(smellMatchers);
 
+  const filesCodeSmells: ISmell[] = mockFilesCodeSmells();
+  await displayFilesCodeSmells(filesCodeSmells);
+  
 };
 
 export const getSmellMatchers = (): SmellMatcher[] => [];
