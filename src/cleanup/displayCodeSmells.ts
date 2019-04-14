@@ -1,24 +1,14 @@
 import * as vscode from 'vscode';
 import {ISmell, SmellType} from '../types';
 import * as path from 'path';
-import {Position} from 'vscode';
-import {extractJSXToComponentToFile} from '../modules/extract-to-component';
 
-export const displayFilesCodeSmells = async (projectSmells: ISmell[]): Promise<any> => {
+export const pickCodeSmellsToResolve = async (projectSmells: ISmell[]): Promise<any> => {
   const quickPickItems = convertFileCodeSmellsToQuickPickItems(projectSmells);
-  const userActions = await vscode.window.showQuickPick(quickPickItems, {canPickMany: true});
-  console.log({userActions});
-};
-
-const extractSmell = (smell: ISmell) => {
-  if (!smell) {
-    return;
-  }
-  const loc = smell.loc;
-  const start: Position = new Position(loc.start.line, loc.start.column);
-  const end: Position = new Position(loc.end.line, loc.end.column);
-  const range: vscode.Range = new vscode.Range(start, end);
-  return extractJSXToComponentToFile(range, smell.fileUri.path);
+  const pickedSmells = (await vscode.window.showQuickPick(quickPickItems, {canPickMany: true})) || [];
+  console.log('pickedSmells ------->', pickedSmells);
+  const smellsToResolvesIndexs = pickedSmells.map(convertPickedSmellToIndex);
+  console.log('smellsToResolvesIndexs ------->', smellsToResolvesIndexs);
+  return projectSmells.filter((smell, i) => smellsToResolvesIndexs.includes(i));
 };
 
 const convertSmellTypeToString = (type: SmellType) => {
@@ -34,8 +24,18 @@ const convertSmellTypeToString = (type: SmellType) => {
 
 const convertFileCodeSmellsToQuickPickItems = (projectSmells: ISmell[]): vscode.QuickPickItem[] => {
   return projectSmells.map((smell, i) => ({
-    label: `#${i + 1} - ${path.parse(smell.fileUri.path).base}`,
+    label: `#${i} - ${path.parse(smell.fileUri.path).base}`,
     description: `${convertSmellTypeToString(smell.type)} start: ${smell.loc.start.line} end: ${smell.loc.end.line}`,
     picked: true
   }));
+};
+
+const convertPickedSmellToIndex = (pickedSmell: vscode.QuickPickItem): number => {
+  const smellIndexRegex = /^#(.*) -/;
+  const indexRegexMatch = smellIndexRegex.exec(pickedSmell.label || '');
+  if (indexRegexMatch) {
+    return Number(indexRegexMatch[1]);
+  } else {
+    return -1;
+  }
 };

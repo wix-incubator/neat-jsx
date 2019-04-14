@@ -51,9 +51,6 @@ const findJsxCodeSmells = (smellMatchers: SmellMatcher[], fileAst: any, fileUri:
   };
   traverse(fileAst, Visitor);
   return smells;
-  // return smellMatchers
-  //   .map((smellMatcher: SmellMatcher) => findAllMatches(smellMatcher, fileAst))
-  //   .reduce((acc: ISmell[], curr: ISmell[]): ISmell[] => [...acc, ...curr], []);
 };
 
 const convertFileToAst = async (fileUri: vscode.Uri) => {
