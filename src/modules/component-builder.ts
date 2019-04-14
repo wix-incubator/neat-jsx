@@ -1,4 +1,3 @@
-import template from "@babel/template";
 import { ComponentProperties } from "./jsx";
 
 function buildFunctionalComponent(name, code, attributes: ComponentProperties) {
@@ -14,24 +13,6 @@ function buildFunctionalComponent(name, code, attributes: ComponentProperties) {
       return (${code});
     }
   `;
-}
-
-function buildStatefulComponent(name, code, attributes: ComponentProperties) {
-  return `class ${name} extends React.Component {
-      render() {
-
-        ${
-          attributes.argumentProps && attributes.argumentProps.size
-            ? `const {${Array.from(attributes.argumentProps).join(
-                ","
-              )}} = this.props`
-            : ""
-        }
-
-        return (${code})
-      }
-    }
-    `;
 }
 
 export function buildComponent(name, code, attributes) {

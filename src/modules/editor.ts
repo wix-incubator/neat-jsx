@@ -16,7 +16,7 @@ export const config = () => vscode.workspace.getConfiguration('glean');
 
 export function currentEditorPath(): string {
   const activeEditor = vscode.window.activeTextEditor;
-  if (!activeEditor) return;
+  if (!activeEditor) return '';
 
   const currentFilePath = path.dirname(activeEditor.document.fileName);
   const rootMatcher = new RegExp(`^${workspaceRoot()}`);
@@ -78,4 +78,3 @@ export const toQuickPicksList = (choices: string[]) => choices.map(item => toQui
 
 export const showErrorMessage = message => vscode.window.showErrorMessage(message);
 
-export const showInformationMessage = (message, items: string[] = []) => vscode.window.showInformationMessage(message, ...items);

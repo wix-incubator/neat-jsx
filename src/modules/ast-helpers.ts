@@ -7,7 +7,3 @@ export function getReactImportReference(ast:any): t.ImportDeclaration {
     );
   });
 }
-
-export function isExportedDeclaration(ast:any) {
-  return t.isExportNamedDeclaration(ast) || t.isExportDefaultDeclaration(ast);
-}

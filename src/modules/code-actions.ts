@@ -40,9 +40,7 @@ export const prependImportsToFileIfNeeded = (
   if (!isOperationBetweenJSFiles(destinationFilePath, originFilePath)) {
     return;
   }
-  console.log('dddddddddd')
   const identifiers = getIdentifier(selection);
-  console.log(identifiers)
   const destinationPathRelativeToOrigin = relative(originFilePath, destinationFilePath);
   const destinationFileName = path.parse(destinationPathRelativeToOrigin).name;
   const destinationModule = [...destinationPathRelativeToOrigin.split('/').slice(0, -1), destinationFileName].join('/');
