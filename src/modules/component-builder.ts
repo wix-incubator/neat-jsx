@@ -9,7 +9,7 @@ function buildFunctionalComponent(name, code, attributes: ComponentProperties) {
 
   ]);
   return `
-    function ${name}({${Array.from(props).join(", ")}}) {
+    export const ${name} = ({${Array.from(props).join(", ")}}) => {
       return (${code});
     }
   `;
