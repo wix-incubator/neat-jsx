@@ -5,7 +5,7 @@ import * as path from 'path';
 import {importReactIfNeeded} from "./jsx";
 import {
   appendSelectedTextToFile,
-  prependImportsToFileIfNeeded,
+  prependImportsToOriginFileIfNeeded,
   replaceSelectionWith,
   switchToDestinationFileIfRequired,
   handleError,
@@ -127,11 +127,11 @@ export async function extractJSXToComponentToFile(range: Range, originPath: stri
     const componentName = produceComponentNameFrom(filePath);
     const selectionProccessingResult = await wrapWithComponent(componentName, selectedText(range));
     await appendSelectedTextToFile(selectionProccessingResult.text, filePath, originPath);
-    await importReactIfNeeded(filePath);
-    await prependImportsToFileIfNeeded(selectionProccessingResult, filePath, originPath);
+    await importReactIfNeeded(filePath); 
     const componentInstance = createComponentInstance(selectionProccessingResult.metadata.name, selectionProccessingResult.metadata.componentProperties);
     await persistFileSystemChanges(replaceSelectionWith(componentInstance, originPath, range));
     await switchToDestinationFileIfRequired(filePath);
+    return () => prependImportsToOriginFileIfNeeded(selectionProccessingResult.text, filePath, originPath);
   } catch (e) {
     handleError(e);
   }
